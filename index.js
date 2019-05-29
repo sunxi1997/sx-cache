@@ -16,11 +16,11 @@ export default function (vm) {
  * @param   {*}       data          缓存的数据
  * @param   {Number}  cache_time    过期时间(单位ms)，默认0（永不过期）
  *
- * @return  {Promise|Null}   resolve:缓存结果
+ * @return  {*}   缓存结果
  */
 export function setCache(key, data, cache_time = 0) {
   if (data === undefined)
-    reject({msg: `setCache '${key}' err! data is undefined`});
+    return {msg: `setCache '${key}' err! data is undefined`};
   let now = new Date();
   let val = {
     time: cache_time === 0 ? 0 : +now + cache_time,
@@ -35,7 +35,7 @@ export function setCache(key, data, cache_time = 0) {
  *
  * @param   {String}  key   缓存的key名称
  *
- * @return  {*}       resolve:缓存的数据或者null
+ * @return  {*}       缓存的数据或者null
  */
 export function getCache(key) {
   let val = localStorage.getItem(key);
@@ -60,7 +60,7 @@ export function getCache(key) {
  *
  * @param   {String}  key    缓存的key名称
  *
- * @return  {*}   resolve:移除结果
+ * @return  {*}   移除结果
  */
 export function removeCache(key) {
   localStorage.removeItem(key)
