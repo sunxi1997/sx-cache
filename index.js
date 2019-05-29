@@ -19,18 +19,15 @@ export default function (vm) {
  * @return  {Promise|Null}   resolve:缓存结果
  */
 export function setCache(key, data, cache_time = 0) {
-  return new Promise((resolve, reject) => {
-    if (data === undefined)
-      reject({msg: `setCache '${key}' err! data is undefined`});
-    let now = new Date();
-    let val = {
-      time: cache_time === 0 ? 0 : +now + cache_time,
-      data
-    };
-    val = JSON.stringify(val)
-    localStorage.setItem(key,val);
-    resolve();
-  })
+  if (data === undefined)
+    reject({msg: `setCache '${key}' err! data is undefined`});
+  let now = new Date();
+  let val = {
+    time: cache_time === 0 ? 0 : +now + cache_time,
+    data
+  };
+  val = JSON.stringify(val)
+  localStorage.setItem(key,val);
 }
 
 /**
@@ -38,36 +35,24 @@ export function setCache(key, data, cache_time = 0) {
  *
  * @param   {String}  key   缓存的key名称
  *
- * @return  {Promise}       resolve:缓存的数据或者null
+ * @return  {*}       resolve:缓存的数据或者null
  */
 export function getCache(key) {
-  return new Promise((resolve, reject) => {
-    let val = localStorage.getItem(key);
-    if (!val) {
-      resolve(null);
-      return;
-    }
-    try {
-      val = JSON.parse(val);
-      if (typeof val === 'string') {
-        resolve(val);
-        return;
-      }
-    } catch (e) {
-      resolve(val)
-      return;
-    }
+  let val = localStorage.getItem(key);
+  if (!val)
+    return null;
 
-    let now = new Date();
-    if (val.time === 0)
-      resolve(val.data);
-    else if (val && val.time - now > 0)
-      resolve(val.data);
-    else {
-      localStorage.removeItem(key)
-      resolve(null);
-    }
-  })
+  try {
+    val = JSON.parse(val);
+    if (typeof val === 'string')
+      return val;
+  } catch (e) {
+    return val;
+  }
+
+  return val.time === 0 || val.time - new Date() > 0 ?  // 永久有效或未过期
+     val.data :
+     localStorage.removeItem(key) || null;
 }
 
 /**
@@ -75,11 +60,8 @@ export function getCache(key) {
  *
  * @param   {String}  key    缓存的key名称
  *
- * @return  {Promise|Null}   resolve:移除结果
+ * @return  {*}   resolve:移除结果
  */
 export function removeCache(key) {
-  return new Promise((resolve, reject) => {
-    localStorage.removeItem(key)
-    resolve();
-  })
+  localStorage.removeItem(key)
 }
