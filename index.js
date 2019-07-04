@@ -106,8 +106,10 @@ function initTimers() {
    keys.forEach(key => {
       let cacheKey = cacheKeys[key];
       let {cache_time, now: time, timer} = cacheKey;
-      time = time + cache_time - now;
-      removeCacheKey(key, time)
+      if (cache_time > 0) {
+         time = time + cache_time - now;
+         removeCacheKey(key, time)
+      }
    });
    syncCacheKeys();
 }
@@ -124,7 +126,8 @@ function addCacheKey(key, cache_time) {
       // 定时清除缓存
       let timer = removeCacheKey(key, cache_time);
       cacheKeys[key] = {cache_time, now, timer}
-   }
+   } else
+      cacheKeys[key] = {cache_time, now}
    syncCacheKeys();
 }
 
